@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-import pandas as pd
 
 # Emilia Butters, Cambridge University, October 2023
 
@@ -24,11 +22,11 @@ age_gb_std = demo_data.groupby(['group'])['age'].std()
 age_gb.plot(kind='bar', title='Mean age across groups', ylabel='Mean age (years)',
          xlabel='Group', yerr=[age_gb_std])
 plt.tight_layout()
-plt.savefig('./figures/demo_age.svg', format='svg')
+plt.savefig('./figures/c01_matching/demo_age.svg', format='svg')
 
 # Plotting sex
 sex_gb = demo_data.groupby(['group'])['sex'].sum()/demo_data.groupby(['group'])['sex'].count()*100
 sex_gb.plot(kind='bar', title='Percent females across groups', ylabel='Percent females (%)',
          xlabel='Group')
 plt.tight_layout()
-plt.savefig('./figures/demo_sex.svg', format='svg')
+plt.savefig('./figures/c01_matching/demo_sex.svg', format='svg')
