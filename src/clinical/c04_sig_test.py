@@ -2,7 +2,6 @@ import pandas as pd
 
 from common.functions import *
 from common.stats_test import *
-import os.path
 
 data = pd.read_csv((study_folder + 'NEUROPSYCH/filtered_data.csv'))
 normality = load_json((study_folder + 'NEUROPSYCH/normality_test_results.json'))
