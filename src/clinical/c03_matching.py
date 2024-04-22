@@ -6,7 +6,7 @@ from common.stats_test import *
 from common.clinical_functions import *
 
 ages = pd.read_csv((study_folder + 'NEUROPSYCH/ages.csv'))
-
+# TODO: not all ages included
 demographic_data = pd.read_csv((study_folder + 'NEUROPSYCH/filtered_data.csv'))
 demographic_data = demographic_data[['participant_number', 'diagnosis', 'sex']]
 demographic_data = pd.merge(demographic_data, ages, on='participant_number')
