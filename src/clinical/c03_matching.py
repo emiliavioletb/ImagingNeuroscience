@@ -6,7 +6,7 @@ from common.stats_test import *
 from common.clinical_functions import *
 from common.visualisation import *
 
-filtered_data = pd.read_csv((study_folder + 'NEUROPSYCH/filtered_data.csv'))
+filtered_data = pd.read_csv('./data/filtered_data.csv')
 filtered_data = filtered_data[['participant_number', 'diagnosis', 'sex', 'age']]
 
 # Remove DLBs
@@ -76,4 +76,4 @@ plt.savefig('./figures/f01_data_cleaning/sex.png', format='png', dpi=500)
 matching_res = pd.DataFrame({'Age': [p_age],
                              'Sex': [p_sex]})
 print(matching_res)
-matching_res.to_csv((study_folder + 'NEUROPSYCH/demo_sig.csv'))
+matching_res.to_csv('./output/neuropsych/demo_sig.csv')
