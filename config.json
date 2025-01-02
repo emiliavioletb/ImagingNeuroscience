@@ -2,6 +2,8 @@
   "name": "phd_code",
   "version": "1.0.0",
   "path": "/Users/emilia/Documents/STUDIES/ONAC/",
+  "clinical_variables": ["badls_total", "dcfs_total", "npi_total", "cbi_total", "cdr_total",
+                "caf_total_one_day", "caf_total"],
   "dependencies": {
   }
 }

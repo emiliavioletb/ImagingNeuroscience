@@ -8,7 +8,7 @@ def active_period(participant, task, period):
     period_conv = convert_period(period)
     active_hbo = hbo[:, period[0]:period[1]]
     active_hbr = hbr[:, period[0]:period[1]]
-    return active_hbo
+    return active_hbo, active_hbr
 
 def mean_change(x, m):
     avg_change_time = np.mean(x, 1)
@@ -41,9 +41,9 @@ tasks = ['a_visual', 'b_visual']
 for i in participants:
     for j in tasks:
         active_hbo, active_hbr = active_period(i, j, [25, 75]) #TODO: make function to find indices
-        a, b, c, d, e, f = mean_change(active_p, (str(i) + '_' + str(j)))
+        a, b, c, d, e, f = mean_change(active_hbo, (str(i) + '_' + str(j)))
         max_a, min_a = maxmin_change(a)
-        percent = percent_active(np.squeeze(np.max(active_p, 1)))
+        percent = percent_active(np.squeeze(np.max(active_hbo, 1)))
         metrics = {
             'mean_all': e,
             'std_all': f,
@@ -51,5 +51,5 @@ for i in participants:
             'min_all': min_a,
             'percent_active': percent
         }
-        fname = f'./data/{i}_{j}_metrics.p'
+        fname = f'./data/{i}_{j}_metrics.json'
         save_json(metrics, fname)

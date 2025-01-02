@@ -14,9 +14,19 @@ for key in normality:
     sig_data = sig_data.fillna(0)
     sig_data = [list(sig_data.loc[sig_data['diagnosis']==j, key]) for j in list(set(sig_data['diagnosis']))]
     if normality[key] == 1:
-        f, p, res = one_way_anova(sig_data, key)
+        if key in clinical_vars:
+            f, p, res = t_test(sig_data, key)
+        else :
+            f, p, res = one_way_anova(sig_data, key)
     else:
-        f, p, res = kruskal_wallis(sig_data, key)
+        if key in clinical_vars:
+            f, p, res = mann_whitney(sig_data, key)
+        else:
+            f, p, res = kruskal_wallis(sig_data, key)
+    if p < 0.05:
+        res = 'Yes'
+    else:
+        res = 'No'
     results = pd.DataFrame({'feature': [key], 'normality': [normality[key]],
                             'f': [f], 'p': [p], 'significant': [res]})
     group_total.append(results)

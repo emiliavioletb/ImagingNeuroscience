@@ -2,6 +2,7 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
 from common.functions import *
+from matplotlib.colors import ListedColormap
 
 def bar_chart(f, dat, ax=None, params=None, save=False):
     if ax is None:
@@ -28,7 +29,7 @@ def bar_chart(f, dat, ax=None, params=None, save=False):
     else:
         plt.show()
 
-def signifiance_bars(feature):
+def significance_bars(feature):
     a = load_pickle(f'./figures/significance_levels/{feature}_significance.pkl')
     return a
 
