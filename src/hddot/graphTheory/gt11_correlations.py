@@ -1,9 +1,5 @@
-import matplotlib.pyplot as plt
-import pandas as pd
 
 from common.functions import *
-from common.stats_test import *
-from common.visualisation import *
 
 plt.rcParams["font.family"] = "Arial"
 allDat = pd.read_csv('./data/regression_data.csv')
@@ -11,7 +7,7 @@ gtMetrics = ['avgBtwCentrality', 'avgClustering', 'avgDegDensity', 'avgDegree', 
              'globEfficiency', 'totalStrength']
 allDat = allDat.dropna(subset=gtMetrics + ['age', 'mmse_total'])
 
-# Testing normality of correlated variables
+# testing normality of correlated variables
 vars = ['age','mmse_total', 'atrophy_rating']
 norm_dict = {}
 for j in vars:
@@ -24,7 +20,7 @@ for j in vars:
         print(f'{j} normally distributed')
         norm_dict[j] = 1
 
-# Compute correlation between variables and graph theory metrics
+# compute correlation between variables and graph theory metrics
 remap_labels = {'avgBtwCentrality': 'Average Betweeness Centrality',
                 'avgClustering': 'Average Clustering',
                 'avgDegDensity': 'Average Degree Density',
@@ -109,7 +105,7 @@ for var in vars:
                                       'P_val': pVal_within, 'Corr': corrs_within})
         allCorrs_within.to_csv(f'./output/graph_theory/{var}_corr_group.csv')
 
-# Save dataframe of significant correlations for future radial plotting
+# save dataframe of significant correlations for future radial plotting
 list_sig_corrs = pd.DataFrame(list_sig_corrs)
 list_sig_corrs.to_csv('./output/graph_theory/only_sig_corrs.csv')
 

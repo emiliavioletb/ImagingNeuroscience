@@ -1,22 +1,19 @@
-import pandas as pd
 
 from common.functions import *
-from common.stats_test import *
-from functools import reduce
 
-# Define data folders
+# fefine data folders
 datFolder = '/Users/emilia/Documents/Publications/Human Brain Mapping/data/'
 
-# Define metrics of interest
+# define metrics of interest
 gtMetrics = ['avgBtwCentrality', 'avgClustering', 'avgDegDensity', 'avgDegree', 'avgEigCentrality',
              'globEfficiency', 'totalStrength']
 
-# Load data
+# load data
 MCI = mat73.loadmat(datFolder + 'MCI_gtMetrics.mat')['macroProperties']
 HC = mat73.loadmat(datFolder + 'HC_gtMetrics.mat')['macroProperties']
 AD = mat73.loadmat(datFolder + 'AD_gtMetrics.mat')['macroProperties']
 
-# Extract metrics for each subject group and create dataframe to store data
+# extract metrics for each subject group and create dataframe to store data
 allData = []
 for j in gtMetrics:
     a = pd.DataFrame({'Group': ['MCI']*len(MCI[j]), 'Value': MCI[j],
@@ -32,23 +29,23 @@ allData = pd.concat(allData, ignore_index=True)
 
 allData.to_csv('./output/graph_theory/macroProperties.csv', index=False)
 
-# Pivot table so each row is a subject and each column is a metric
+# pivot table so each row is a subject and each column is a metric
 pivot_df = allData.pivot(index='subject_code', columns='Metric', values='Value').reset_index()
 
-# Extract num_parcels per group and re-name index column 'subject_code'
+# extract num_parcels per group and re-name index column 'subject_code'
 num_parcels = pd.concat([pd.DataFrame(MCI)[['fname', 'num_parcels']],
                         pd.DataFrame(AD)[['fname', 'num_parcels']],
                         pd.DataFrame(HC)[['fname', 'num_parcels']]], axis=0)
 num_parcels['subject_code'] = [x[0] if isinstance(x, list) else x for x in num_parcels['fname']]
 num_parcels = num_parcels.drop(columns='fname')
 
-# Merge graph theory metrics, neuropsych, and num_parcels
+# merge graph theory metrics, neuropsych, and num_parcels
 neuropsych = pd.read_csv('./data/filtered_data.csv')
 allData_reg = reduce(lambda  left,right: pd.merge(left,right,on=['subject_code'],
                                             how='inner'), [pivot_df, neuropsych, num_parcels])
 allData_reg.to_csv('./data/regression_data.csv', index=False)
 
-# Test each metric for normality
+# test each metric for normality
 normMetrics = {}
 for j in gtMetrics:
     norm = []

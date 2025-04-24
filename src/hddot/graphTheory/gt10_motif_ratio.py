@@ -1,9 +1,6 @@
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-import pandas as pd
 
-from common.stats_test import *
-from common.visualisation import *
+
+from common.functions import *
 
 motifs = pd.read_csv('~/Documents/PUBLICATIONS/Human Brain Mapping/data/motifs.csv')
 motifs = motifs.drop(motifs[motifs.Motif == ' triangle_extra'].index)

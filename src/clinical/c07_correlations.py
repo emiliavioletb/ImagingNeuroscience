@@ -1,12 +1,12 @@
-import pandas as pd
 
-from common.visualisation import *
 from common.functions import *
 
+# load data
 data = pd.read_csv((study_folder + 'NEUROPSYCH/filtered_data.csv')).fillna(0)
 data = data.drop(40)
 significance_data = pd.read_csv((study_folder + 'NEUROPSYCH/group_significance.csv'))
 
+# plot correlations
 comparisons = []
 for index, row in significance_data.iterrows():
     for index2, row2 in significance_data.iterrows():

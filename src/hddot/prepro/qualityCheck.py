@@ -1,23 +1,17 @@
 import matplotlib.pyplot as plt
 
-from common.visualisation import *
-from common.stats_test import *
 from common.functions import *
-import os
-import pandas as pd
-import re
-from matplotlib import rc
 rc('text', usetex=True)
 
+# load data
 datDir = '/Users/emilia/Documents/STUDIES/ONAC/hpc/'
 filtered_data = pd.read_csv('./data/filtered_data.csv')
 folders = [name for name in os.listdir(datDir) if os.path.isdir(os.path.join(datDir, name))]
 
+# clean data
 dataQualPerChannels = []
 totalChannels = []
-
 channelDists = ['[0  20]', '[20 27.5]', '[27.5 32.5]', '[32.5 37.5]', '[37.5 42.5]', '[42.5 Inf]']
-
 for j in folders:
     if j[0] != 'D':
         if j in filtered_data['subject_code'].to_list():
@@ -42,26 +36,12 @@ for j in folders:
                     good_channels = int(match.group(1))
                     totalChannel = pd.DataFrame({'num_channels': [good_channels]})
                     totalChannels.append(totalChannel)
-
 totalChannels = pd.concat(totalChannels, ignore_index=True)
 dataQualPerChannels = pd.concat(dataQualPerChannels, ignore_index=True)
 
-# fig1, ax1 = plt.subplots(figsize=(4.5, 3.5))
-# sns.boxplot(data=dataQualPerChannels, x='dist', y='percent_channel', palette='mako_r',
-#             boxprops={'alpha': 0.4})
-# sns.stripplot(data=dataQualPerChannels, x="dist", y="percent_channel", dodge=True, ax=ax1, palette='mako')
-# plt.ylabel('Percentage of good channels (%)')
-# plt.xlabel('Range of channel distances (mm)')
-# plt.xticks(fontsize=8)
-# [ax1.axvline(x+.5,color='k', linewidth=0.3) for x in ax1.get_xticks()]
-# plt.tight_layout()
-# #plt.show()
-# plt.savefig('/Users/emilia/Documents/Publications/Human Brain Mapping/dataQual.png', format='png', dpi=500)
-
-# Testing between at home vs in HSB
+# test significant between locations
 at_home = dataQualPerChannels.loc[dataQualPerChannels['testing_loc'] == 1]
 at_hsb = dataQualPerChannels.loc[dataQualPerChannels['testing_loc'] == 0]
-
 norm = []
 for j in dataQualPerChannels['dist'].unique():
     for i in [0, 1]:
@@ -97,6 +77,7 @@ for j in dataQualPerChannels['dist'].unique():
     testing_loc_results.append(d)
 testing_loc_results = pd.concat(testing_loc_results, ignore_index=True)
 
+# plot data
 fig1, ax1 = plt.subplots(figsize=(7.5, 5))
 palette = sns.color_palette("mako", n_colors=2)
 sns.set_theme(style='whitegrid')

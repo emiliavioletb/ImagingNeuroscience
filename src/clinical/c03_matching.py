@@ -1,18 +1,14 @@
-import numpy as np
-import pandas as pd
 
 from common.functions import *
-from common.stats_test import *
-from common.clinical_functions import *
-from common.visualisation import *
 
+# load data
 filtered_data = pd.read_csv('./data/filtered_data.csv')
 filtered_data = filtered_data[['participant_number', 'diagnosis', 'sex', 'age']]
 
-# Remove DLBs
+# remove DLBs
 filtered_data = filtered_data.loc[filtered_data['diagnosis']!='DLB']
 
-# Test for differences in age
+# test for differences in age
 norm_age = []
 for j in list(set(filtered_data['diagnosis'])):
     f, p = stats.shapiro(filtered_data.loc[filtered_data['diagnosis']==j, 'age'])
@@ -20,15 +16,17 @@ for j in list(set(filtered_data['diagnosis'])):
         norm_age.append(1)
     else:
         norm_age.append(0)
-
 age_transformed = [list(filtered_data.loc[filtered_data['diagnosis']==j, 'age']) for j in list(set(filtered_data['diagnosis']))]
 
 if 0 in norm_age:
-    f, p_age, res = kruskal_wallis(age_transformed, 'age')
+    f, p = stats.kruskal(*age_transformed)
+    test = 'kruskal'
 else:
-    f, p, res = one_way_anova(age_transformed, 'age')
+    f, p = stats.f_oneway(*age_transformed)
+    test = 'one way'
+print(f'p = {round(p, 3)}, f = {round(f, 3)} using {test}')
 
-# Post-hoc tests
+# post-hoc tests
 comparisons = []
 for i in list(set(filtered_data['diagnosis'])):
     for j in list(set(filtered_data['diagnosis'])):
@@ -37,9 +35,9 @@ for i in list(set(filtered_data['diagnosis'])):
                                 filtered_data.loc[filtered_data['diagnosis']==j, 'age'].to_list())
             comparisons.append(f'{i} vs {j}')
             comparisons.append(f'{j} vs {i}')
-            print(f'{res} significant difference between {i} and {j}')
+            print(f'{(round(p, 3))<0.05} difference between {i} and {j}')
 
-# Plotting age
+# plotting age
 fig1, ax1 = plt.subplots(figsize=(4.8, 3.5))
 sns.boxplot(data=filtered_data, x='diagnosis', y='age', palette='mako', order=['HC', 'MCI', 'AD'])
 ax1.set_xlabel('Diagnosis')
@@ -52,13 +50,14 @@ ax1.set_xlabel('Diagnosis')
 fig1.tight_layout()
 plt.savefig('./figures/f01_data_cleaning/age.png', format='png', dpi=500)
 
-# Testing for differences in sex
+# testing for differences in sex
 demographic_data = convert_gender(filtered_data)
 contigency = pd.crosstab(demographic_data['sex'], demographic_data['diagnosis'])
 c, p_sex, dof, expected = stats.chi2_contingency(contigency)
 contigency_pct = pd.crosstab(demographic_data['sex'], demographic_data['diagnosis'], normalize='columns')
+print(f'p = {round(p, 3)}, c = {round(c, 3)}')
 
-# Plotting sex
+# plotting sex
 fig, ax = plt.subplots(figsize=(4.8, 3.5))
 contigency_pct = contigency_pct.reset_index()
 contigency_pct_melted = contigency_pct.melt(id_vars="sex", value_vars=contigency_pct.columns[1:],
@@ -73,7 +72,3 @@ ax.legend(loc='lower right')
 fig.tight_layout()
 plt.savefig('./figures/f01_data_cleaning/sex.png', format='png', dpi=500)
 
-matching_res = pd.DataFrame({'Age': [p_age],
-                             'Sex': [p_sex]})
-print(matching_res)
-matching_res.to_csv('./output/neuropsych/demo_sig.csv')

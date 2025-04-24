@@ -1,9 +1,6 @@
 
 import matplotlib.pyplot as plt
-import matplotlib as mpl
-from common.stats_test import *
-from common.visualisation import *
-from matplotlib.patches import Polygon
+from common.functions import *
 plt.rcParams["font.family"] = "Arial"  # Set global font to Arial
 
 hatch_size = 0.8  # Change me
@@ -75,7 +72,7 @@ for i, (patch, hatch) in enumerate(zip(patches, h)):
 handles, labels = ax.get_legend_handles_labels()
 remapped_labels = [remap_labels.get(label, label) for label in labels]
 l = ax.legend(handles=handles, labels=remapped_labels, title='Motif',
-           loc='upper left', bbox_to_anchor=(1, 1), fontsize=20,
+           loc='upper left', bbox_to_anchor=(1, 1.03), fontsize=20,
            markerscale=2, handlelength=2, title_fontproperties={'weight': 'bold', 'size': 20})
 for lp, hatch in zip(l.get_patches(), hatches):
     lp.set_hatch(hatch)

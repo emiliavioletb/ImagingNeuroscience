@@ -1,21 +1,17 @@
-import matplotlib.pyplot as plt
-import pandas as pd
 
 from common.functions import *
-from common.clinical_functions import *
-from common.stats_test import *
 
-# Load data
+# load data
 filename = study_folder + 'NEUROPSYCH/Optical*'
 filename = glob.glob(filename)[0]
 redcap_data = pd.read_csv(filename)
 cleaned_columns = pd.read_csv(study_folder + 'NEUROPSYCH/columns_to_keep.csv', header=None)
 
-# Filter out excluded participants
+# filter out excluded participants
 included_data = redcap_data[redcap_data['included']==1]
 included_data = included_data.drop(columns=['included'])
 
-# Isolate visual hallucinations
+###### FORMAT VISUAL HALLUCINATIONS ######
 VH_dat = included_data[['subject_code', 'visual_1', 'visual_2', 'visual_3', 'visual_4',
                         'visual_5', 'visual_6']]
 VH_dat['tot'] = VH_dat[['visual_1', 'visual_2', 'visual_3', 'visual_4',
@@ -30,10 +26,8 @@ filtered_data = included_data[columns]
 # Convert diagnosis to string labels
 filtered_data = convert_diagnosis(filtered_data)
 
-# Replace Nans with 0
+###### FORMAT FARNSWORTH ERROR ######
 filtered_data['farnsworth_test'] = filtered_data['farnsworth_test'].fillna(0)
-
-# Compute Farnsworth scores and re-save data
 standard = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 for j in filtered_data['subject_code'].unique():
     farnsworth_all = filtered_data.loc[filtered_data['subject_code'] == j, 'farnsworth_test'].to_list()
@@ -51,7 +45,7 @@ for j in filtered_data['subject_code'].unique():
     filtered_data.loc[filtered_data['subject_code'] == j, 'farnsworth_error'] = farnsworth_error
 columns.append('farnsworth_error')
 
-# Add atrophy ratings to data
+###### FORMAT ATROPHY RATINGS ######
 atrophy_rating = pd.read_csv((study_folder + 'NEUROPSYCH/atrophy_ratings.csv'), usecols=['ID', 'total'])
 atrophy_rating = atrophy_rating.rename(columns={'ID': 'subject_code'})
 filtered_data['subject_suffix'] = filtered_data['subject_code'].str.split('_').str[1]
@@ -61,7 +55,7 @@ filtered_data.drop(['subject_suffix', 'subject_code_drop'], axis=1, inplace=True
 filtered_data = filtered_data.rename(columns={'total': 'atrophy_rating'})
 columns.append('atrophy_rating')
 
-# Fix trails data
+###### FORMAT TRAILS DATA ######
 filtered_data['trail_a_time'] = filtered_data['trail_a_time'].astype(float)
 filtered_data['trail_b_time'] = filtered_data['trail_b_time'].astype(float)
 for index, row in filtered_data.iterrows():
@@ -71,20 +65,20 @@ for index, row in filtered_data.iterrows():
         filtered_data['trail_b_errors'][index] = np.nan
         filtered_data['trail_b_time'][index] = np.nan
 
-# Add presence of visual hallucinations
+# add presence of visual hallucinations
 filtered_data = pd.merge(filtered_data, VH_dat, on='subject_code', how='inner')
 columns.append('visual_hallucinations')
 
-# Save filtered data (NB. This is the final copy)
+# save filtered data (NB. This is the final copy)
 filtered_data.to_csv('./data/filtered_data.csv', index=False)
 
-# Remove un-needed columns
+# remove un-needed columns
 columns.remove('participant_number')
 columns.remove('subject_code')
 columns.remove('farnsworth_correct')
 columns.remove('farnsworth_test')
 
-# Variable summary and plotting
+# variable summary and plotting
 features_summary = []
 for j in columns:
     if j != 'diagnosis':

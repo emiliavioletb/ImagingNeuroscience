@@ -1,20 +1,12 @@
 from common.functions import *
-from common.stats_test import *
-import pandas as pd
 
-# Features we want to test
-features_norm_test = ['acer_total', 'mmse_total', 'moca_total', 'hads_total',
-                      'updrs_total', 'smell_total', 'pareidolia_total',
-                      'farnsworth_error', 'gdss_score', 'sleep_total',
-                      'badls_total', 'dcfs_total', 'npi_total', 'cbi_total',
-                      'cdr_total', 'caf_total_one_day', 'caf_total']
-
+# load data
 cleaned_data = pd.read_csv('./data/filtered_data.csv')
 groups = list(set(cleaned_data['diagnosis']))
 
-# Testing features for normality
+# testing features for normality
 normality_dict = {}
-for j in features_norm_test:
+for j in features:
     dat = cleaned_data[[j, 'diagnosis']]
     norm = []
     for m in groups:
